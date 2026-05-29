@@ -32,12 +32,20 @@ c=$(hit -b "$JARDIR/collector.jar" "$BASE/collector/index.php"); assert_code "co
 c=$(hit -b "$JARDIR/admin.jar"     "$BASE/admin/index.php");     assert_code "admin dashboard"     200 "$c"; assert_body "admin dashboard renders"     "Admin Dashboard"
 
 echo
+echo "== Admin tools (authenticated) =="
+c=$(hit -b "$JARDIR/admin.jar" "$BASE/admin/users.php");              assert_code "admin users page" 200 "$c"; assert_body "users page renders" "User Management"
+
+# NOTE: if your CSV file is named admin/export.php, change the URL below to:
+# "$BASE/admin/export.php"
+c=$(hit -b "$JARDIR/admin.jar" "$BASE/admin/export_reports.php");     assert_code "admin CSV export" 200 "$c"; assert_body "csv header present" "id,citizen,category"
+
+echo
 echo "== Public stats API =="
 c=$(hit "$BASE/api/stats.php");                                  assert_code "stats endpoint" 200 "$c"; assert_body "stats returns JSON counts" '"reports"'
 
 echo
 echo "== End-to-end report lifecycle =="
-c=$(hit -b "$JARDIR/citizen.jar" -d "category_id=1&description=Overflowing+bin+at+park&location_text=Central+Park+Gate+3" "$BASE/citizen/submit.php"); assert_code "citizen submits report" 302 "$c"; assert_loc "submit redirects to dashboard" "index.php"
+c=$(hit -b "$JARDIR/citizen.jar" -d "category_id=1&description=Overflowing+bin+at+park&location_text=Central+Park+Gate+3" "$BASE/citizen/submit.php"); assert_code "citizen submits report" 302 "$c"; assert_loc "submit redirects" "citizen/index.php"
 c=$(hit -b "$JARDIR/citizen.jar" "$BASE/citizen/index.php");     assert_body "report shows on citizen dashboard" "Overflowing bin at park"
 c=$(hit -b "$JARDIR/admin.jar" -d "report_id=1&collector_id=2" "$BASE/admin/index.php"); assert_code "admin assigns report" 302 "$c"
 c=$(hit -b "$JARDIR/admin.jar" "$BASE/admin/index.php");         assert_body "assignment sets in_progress" 'badge in_progress'
