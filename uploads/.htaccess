@@ -7,3 +7,5 @@ RemoveType .php .phtml .php3 .php4 .php5 .php7 .phar
 <FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|cgi|pl|asp|aspx|sh|exe)$">
     Require all denied
 </FilesMatch>
+
+Require all denied

@@ -5,8 +5,25 @@ require_once __DIR__ . '/../db.php';
 
 $userId = $_SESSION['user_id'];
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $reportId = (int)($_POST['report_id'] ?? 0);
+
+  if ($reportId > 0) {
+    $stmt = $pdo->prepare("
+      UPDATE waste_reports
+      SET status = 'rejected', updated_at = NOW()
+      WHERE id = ? AND citizen_id = ? AND status = 'pending'
+    ");
+    $stmt->execute([$reportId, $userId]);
+  }
+
+  header('Location: index.php');
+  exit();
+}
+
 $stmt = $pdo->prepare("
-  SELECT wr.id, wc.name AS category, wr.description, wr.location_text, wr.status, wr.created_at
+  SELECT wr.id, wc.name AS category, wr.description, wr.location_text, wr.status,
+         wr.created_at, wr.updated_at
   FROM waste_reports wr
   JOIN waste_categories wc ON wc.id = wr.category_id
   WHERE wr.citizen_id = ?
@@ -50,19 +67,38 @@ $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <table class="data" id="reports-table">
           <thead>
             <tr>
-              <th>ID</th><th>Category</th><th>Description</th>
-              <th>Location</th><th>Status</th><th>Created</th>
+              <th>ID</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Updated</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($reports as $r): ?>
+            <?php foreach ($reports as $report): ?>
               <tr>
-                <td><?php echo (int)$r['id']; ?></td>
-                <td><?php echo htmlspecialchars($r['category']); ?></td>
-                <td><?php echo htmlspecialchars($r['description']); ?></td>
-                <td><?php echo htmlspecialchars($r['location_text']); ?></td>
-                <td><span class="badge <?php echo htmlspecialchars($r['status']); ?>"><?php echo htmlspecialchars(str_replace('_', ' ', $r['status'])); ?></span></td>
-                <td><?php echo htmlspecialchars($r['created_at']); ?></td>
+                <td><?php echo (int)$report['id']; ?></td>
+                <td><?php echo htmlspecialchars($report['category']); ?></td>
+                <td><?php echo htmlspecialchars($report['description']); ?></td>
+                <td><?php echo htmlspecialchars($report['location_text']); ?></td>
+                <td><span class="badge <?php echo htmlspecialchars($report['status']); ?>"><?php echo htmlspecialchars(str_replace('_', ' ', $report['status'])); ?></span></td>
+                <td><?php echo htmlspecialchars($report['created_at']); ?></td>
+                <td><?php echo htmlspecialchars($report['updated_at'] ?? $report['created_at']); ?></td>
+                <td>
+                  <a class="btn small" href="view.php?report_id=<?php echo (int)$report['id']; ?>">View</a>
+                  <?php if ($report['status'] === 'pending'): ?>
+                    <a class="btn small" href="submit.php?report_id=<?php echo (int)$report['id']; ?>">Edit</a>
+                    <form method="POST" style="display:inline;" onsubmit="return confirm('Cancel this pending report?');">
+                      <input type="hidden" name="report_id" value="<?php echo (int)$report['id']; ?>">
+                      <button type="submit" class="btn small">Cancel</button>
+                    </form>
+                  <?php else: ?>
+                    <span class="muted">—</span>
+                  <?php endif; ?>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
