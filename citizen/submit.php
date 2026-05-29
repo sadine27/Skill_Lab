@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../auth_check.php';
+require_role('citizen');
 require_once __DIR__ . '/../db.php';
 
 $userId = $_SESSION['user_id'];
