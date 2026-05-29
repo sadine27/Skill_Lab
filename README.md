@@ -131,17 +131,24 @@ Each member tests their own module against three failure points:
 ## Local Setup
 
 1. **Install XAMPP** and start Apache + MySQL
-2. Open `http://localhost/phpmyadmin` → create database `waste_system`
-3. Import `schema.sql` into the database
-4. Clone or copy this project into `C:/xampp/htdocs/waste_system/`
-5. Edit `db.php` with your local credentials:
+2. Clone or copy this project into `C:/xampp/htdocs/waste_system/`
+3. Open `http://localhost/phpmyadmin` → **Import** → choose `schema.sql`
+   (it creates the `waste_system` database, all tables, seed categories, and a
+   default admin account)
+4. `db.php` is already configured for XAMPP defaults; adjust only if yours differ:
    ```php
    $host = 'localhost';
    $db   = 'waste_system';
    $user = 'root';
    $pass = '';  // XAMPP default
    ```
-6. Open `http://localhost/waste_system/auth/register.php`
+5. Open `http://localhost/waste_system/` and log in, or register a new account.
+
+**Default admin login** (created by `schema.sql` — change the password after first login):
+
+| Email               | Password   |
+|---------------------|------------|
+| `admin@waste.local` | `admin123` |
 
 ---
 

@@ -87,12 +87,11 @@ $name = $_SESSION['user_name'] ?? null;
   </style>
 </head>
 
-<body>
-  <div class="topbar">Best viewed in a desktop browser • 1024 x 768 recommended</div>
+<body data-base=".">
+  <div class="topbar">Community waste reporting portal</div>
 
   <div class="wrapper">
     <header class="header">
-      <div class="badge">NEW 2010 PORTAL</div>
       <h1>Smart Waste Aggregation System</h1>
       <p>Citizen reporting • Collector dispatch • Admin oversight</p>
     </header>
@@ -115,7 +114,7 @@ $name = $_SESSION['user_name'] ?? null;
           <div class="body login-box">
             <?php if (!$role): ?>
               <!-- Real login form -> sends to your working PHP login page -->
-              <form method="POST" action="auth/login.php">
+              <form method="POST" action="auth/login.php" data-validate>
                 <input type="email" name="email" placeholder="Email" required />
                 <input type="password" name="password" placeholder="Password" required />
                 <button type="submit">Sign In</button>
@@ -171,12 +170,13 @@ $name = $_SESSION['user_name'] ?? null;
           <a class="cta secondary" href="#about">Learn More</a>
         </div>
 
-        <table class="stats" aria-label="site stats">
+        <!-- Live counts pulled from api/stats.php by assets/app.js -->
+        <table class="stats" aria-label="live system stats">
           <tr>
-            <td>128<small>Reports Logged</small></td>
-            <td>34<small>Collectors Active</small></td>
-            <td>9<small>Areas Covered</small></td>
-            <td>24/7<small>Monitoring</small></td>
+            <td><span data-stat="reports">…</span><small>Reports Logged</small></td>
+            <td><span data-stat="collected">…</span><small>Reports Collected</small></td>
+            <td><span data-stat="collectors">…</span><small>Active Collectors</small></td>
+            <td><span data-stat="areas">…</span><small>Areas Covered</small></td>
           </tr>
         </table>
 
@@ -211,8 +211,10 @@ $name = $_SESSION['user_name'] ?? null;
     </section>
 
     <footer class="footer">
-      &copy; 2010 Smart Waste Aggregation System. All rights reserved.
+      &copy; <?php echo date('Y'); ?> Smart Waste Aggregation System. All rights reserved.
     </footer>
   </div>
+
+  <script src="assets/app.js"></script>
 </body>
 </html>

@@ -32,20 +32,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-    <h2>Login</h2>
-    <p><?php echo htmlspecialchars($message); ?></p>
+    <div class="container" style="max-width:420px;">
+        <div class="card">
+            <h2>Login</h2>
+            <?php if ($message): ?>
+                <div class="alert error"><?php echo htmlspecialchars($message); ?></div>
+            <?php endif; ?>
 
-    <form method="POST">
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password" placeholder="Password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
+            <form method="POST" data-validate>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
 
-    <p><a href="register.php">Register here</a></p>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <p style="margin-top:16px;"><button type="submit" class="btn">Login</button></p>
+            </form>
+
+            <p class="muted">New here? <a href="register.php">Create an account</a></p>
+        </div>
+    </div>
+
+    <script src="../assets/app.js"></script>
 </body>
 </html>

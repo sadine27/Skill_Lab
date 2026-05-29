@@ -1,0 +1,134 @@
+/* Smart Waste Aggregation System — shared styles
+   Used by the citizen / collector / admin dashboards and auth pages.
+   The landing page (index.php) keeps its own retro inline theme. */
+
+:root {
+  --bg: #eef1f4;
+  --panel: #ffffff;
+  --border: #d3d9e0;
+  --text: #1d2733;
+  --muted: #5b6675;
+  --accent: #00695c;
+  --accent-dark: #004d40;
+  --danger: #b00020;
+  --shadow: rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.app-bar {
+  background: var(--accent);
+  color: #fff;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+.app-bar h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: .3px; }
+.app-bar .user { font-size: 14px; }
+.app-bar a { color: #b2dfdb; text-decoration: none; }
+.app-bar a:hover { color: #fff; text-decoration: underline; }
+
+.container { max-width: 1040px; margin: 24px auto; padding: 0 16px; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card h2, .card h3 { margin-top: 0; }
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 9px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn:hover { background: var(--accent-dark); }
+.btn.secondary { background: #eceff1; color: var(--text); }
+.btn.secondary:hover { background: #cfd8dc; }
+.btn.small { padding: 5px 10px; font-size: 13px; }
+
+/* Forms */
+label { display: block; font-weight: 600; margin: 12px 0 4px; font-size: 14px; }
+input, select, textarea {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  background: #fff;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 105, 92, .15);
+}
+.field-error { border-color: var(--danger) !important; }
+.field-error-msg { color: var(--danger); font-size: 13px; margin: 4px 0 0; }
+
+/* Tables */
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+table.data th, table.data td {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+table.data th {
+  background: #f5f7f9;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--muted);
+}
+table.data tr:hover td { background: #fafbfc; }
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.badge.pending     { background: #fff3cd; color: #856404; }
+.badge.in_progress { background: #cce5ff; color: #004085; }
+.badge.collected   { background: #d4edda; color: #155724; }
+.badge.rejected    { background: #f8d7da; color: #721c24; }
+
+/* Messages */
+.alert { padding: 11px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+.alert.error   { background: #f8d7da; color: #721c24; }
+.alert.success { background: #d4edda; color: #155724; }
+
+.empty { color: var(--muted); font-style: italic; }
+.toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.toolbar .grow { flex: 1; }
+.muted { color: var(--muted); font-size: 13px; }

@@ -1,0 +1,9 @@
+# Citizen-uploaded photos live here. Never execute anything in this folder —
+# serve uploads as static files only, even if an attacker sneaks in a script.
+php_flag engine off
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phar
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .phar
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|cgi|pl|asp|aspx|sh|exe)$">
+    Require all denied
+</FilesMatch>

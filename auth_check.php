@@ -1,8 +1,10 @@
 <?php
 session_start();
 
+// All protected pages live in subfolders (citizen/, collector/, admin/),
+// so a relative redirect works regardless of where the app is deployed.
 if (!isset($_SESSION['user_id'])) {
-  header("Location: /waste_system/auth/login.php");
+  header("Location: ../auth/login.php");
   exit();
 }
 

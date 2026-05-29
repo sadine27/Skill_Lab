@@ -32,43 +32,70 @@ $stmt->execute([$collectorId]);
 $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
-<html>
-<head><title>Collector Dashboard</title></head>
-<body>
-<h2>Collector Dashboard</h2>
-<p>Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?> |
-  <a href="../auth/logout.php">Logout</a>
-</p>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collector Dashboard</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-base="..">
+  <div class="app-bar">
+    <h1>Collector Dashboard</h1>
+    <span class="user">
+      Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>
+      &nbsp;|&nbsp; <a href="../auth/logout.php">Logout</a>
+    </span>
+  </div>
 
-<h3>Assigned Reports</h3>
-<?php if (!$reports): ?>
-  <p>No assigned reports.</p>
-<?php else: ?>
-<table border="1" cellpadding="8" cellspacing="0">
-<tr>
-  <th>ID</th><th>Category</th><th>Description</th><th>Location</th><th>Status</th><th>Update</th>
-</tr>
-<?php foreach ($reports as $r): ?>
-<tr>
-  <td><?php echo (int)$r['id']; ?></td>
-  <td><?php echo htmlspecialchars($r['category']); ?></td>
-  <td><?php echo htmlspecialchars($r['description']); ?></td>
-  <td><?php echo htmlspecialchars($r['location_text']); ?></td>
-  <td><?php echo htmlspecialchars($r['status']); ?></td>
-  <td>
-    <form method="POST" style="margin:0;">
-      <input type="hidden" name="report_id" value="<?php echo (int)$r['id']; ?>">
-      <select name="status" required>
-        <option value="in_progress">in_progress</option>
-        <option value="collected">collected</option>
-        <option value="rejected">rejected</option>
-      </select>
-      <button type="submit">Update</button>
-    </form>
-  </td>
-</tr>
-<?php endforeach; ?>
-</table>
-<?php endif; ?>
+  <div class="container">
+    <div class="card">
+      <div class="toolbar">
+        <h3 style="margin:0;">Assigned Reports</h3>
+        <span class="grow"></span>
+        <?php if ($reports): ?>
+          <input type="text" data-filter="jobs-table" placeholder="Filter jobs…" style="max-width:240px;">
+        <?php endif; ?>
+      </div>
+
+      <?php if (!$reports): ?>
+        <p class="empty">No assigned reports right now.</p>
+      <?php else: ?>
+      <table class="data" id="jobs-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Category</th><th>Description</th>
+            <th>Location</th><th>Status</th><th>Update</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($reports as $r): ?>
+          <tr>
+            <td><?php echo (int)$r['id']; ?></td>
+            <td><?php echo htmlspecialchars($r['category']); ?></td>
+            <td><?php echo htmlspecialchars($r['description']); ?></td>
+            <td><?php echo htmlspecialchars($r['location_text']); ?></td>
+            <td><span class="badge <?php echo htmlspecialchars($r['status']); ?>"><?php echo htmlspecialchars(str_replace('_', ' ', $r['status'])); ?></span></td>
+            <td>
+              <form method="POST" style="display:flex; gap:6px; margin:0;"
+                    data-confirm="Update the status of report #<?php echo (int)$r['id']; ?>?">
+                <input type="hidden" name="report_id" value="<?php echo (int)$r['id']; ?>">
+                <select name="status" required style="width:auto;">
+                  <option value="in_progress">In Progress</option>
+                  <option value="collected">Collected</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                <button type="submit" class="btn small">Update</button>
+              </form>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+      <?php endif; ?>
+    </div>
+  </div>
+
+  <script src="../assets/app.js"></script>
 </body>
 </html>

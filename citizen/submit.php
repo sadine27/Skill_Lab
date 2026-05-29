@@ -19,24 +19,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $photoPath = null;
 
     // handle optional photo upload
-    if (!empty($_FILES['photo']['name'])) {
-      $allowed = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!in_array($_FILES['photo']['type'], $allowed, true)) {
-        $message = 'Photo must be JPG/PNG/WebP.';
+    if (!empty($_FILES['photo']['name']) && $_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+      if ($_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
+        $message = 'Photo upload failed (error ' . (int)$_FILES['photo']['error'] . ').';
+      } elseif ($_FILES['photo']['size'] > 5 * 1024 * 1024) {
+        $message = 'Photo must be 5 MB or smaller.';
       } else {
-        $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-        $safeName = 'report_' . time() . '_' . rand(1000,9999) . '.' . $ext;
-
-        $uploadDir = __DIR__ . '/../uploads/';
-        if (!is_dir($uploadDir)) {
-          mkdir($uploadDir, 0777, true);
-        }
-
-        $dest = $uploadDir . $safeName;
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
-          $photoPath = 'uploads/' . $safeName;
+        // Verify the actual file contents are an image — never trust the
+        // client-supplied MIME type or filename extension (both are spoofable).
+        $allowed = [
+          IMAGETYPE_JPEG => 'jpg',
+          IMAGETYPE_PNG  => 'png',
+          IMAGETYPE_WEBP => 'webp',
+        ];
+        $info = @getimagesize($_FILES['photo']['tmp_name']);
+        if ($info === false || !isset($allowed[$info[2]])) {
+          $message = 'Photo must be a valid JPG, PNG, or WebP image.';
         } else {
-          $message = 'Photo upload failed.';
+          $ext = $allowed[$info[2]];
+          $safeName = 'report_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+
+          $uploadDir = __DIR__ . '/../uploads/';
+          if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+          }
+
+          $dest = $uploadDir . $safeName;
+          if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
+            $photoPath = 'uploads/' . $safeName;
+          } else {
+            $message = 'Photo upload failed.';
+          }
         }
       }
     }
@@ -55,43 +68,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Submit Waste Report</title>
+  <link rel="stylesheet" href="../assets/style.css">
 </head>
-<body>
-  <h2>Submit Waste Report</h2>
-  <p><a href="index.php">Back to Dashboard</a> | <a href="../auth/logout.php">Logout</a></p>
+<body data-base="..">
+  <div class="app-bar">
+    <h1>Submit Waste Report</h1>
+    <span class="user">
+      <a href="index.php">Back to Dashboard</a> &nbsp;|&nbsp;
+      <a href="../auth/logout.php">Logout</a>
+    </span>
+  </div>
 
-  <?php if ($message): ?>
-    <p style="color:red;"><?php echo htmlspecialchars($message); ?></p>
-  <?php endif; ?>
+  <div class="container">
+    <div class="card">
+      <?php if ($message): ?>
+        <div class="alert error"><?php echo htmlspecialchars($message); ?></div>
+      <?php endif; ?>
 
-  <form method="POST" enctype="multipart/form-data">
-    <label>Category *</label><br>
-    <select name="category_id" required>
-      <option value="">-- select --</option>
-      <?php foreach ($categories as $c): ?>
-        <option value="<?php echo (int)$c['id']; ?>">
-          <?php echo htmlspecialchars($c['name']); ?>
-        </option>
-      <?php endforeach; ?>
-    </select>
-    <br><br>
+      <form method="POST" enctype="multipart/form-data" data-validate>
+        <label for="category_id">Category *</label>
+        <select id="category_id" name="category_id" required>
+          <option value="">-- select --</option>
+          <?php foreach ($categories as $c): ?>
+            <option value="<?php echo (int)$c['id']; ?>">
+              <?php echo htmlspecialchars($c['name']); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
 
-    <label>Description *</label><br>
-    <textarea name="description" rows="4" cols="50" required></textarea>
-    <br><br>
+        <label for="description">Description *</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
 
-    <label>Location *</label><br>
-    <input type="text" name="location_text" size="50" required />
-    <br><br>
+        <label for="location_text">Location *</label>
+        <input type="text" id="location_text" name="location_text" required
+               placeholder="Street, landmark, or area name" />
 
-    <label>Photo (optional)</label><br>
-    <input type="file" name="photo" accept="image/*" />
-    <br><br>
+        <label for="photo">Photo (optional)</label>
+        <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp" />
+        <p class="muted">JPG, PNG, or WebP — up to 5 MB.</p>
 
-    <button type="submit">Submit Report</button>
-  </form>
+        <p><button type="submit" class="btn">Submit Report</button></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/app.js"></script>
 </body>
 </html>
