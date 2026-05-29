@@ -180,9 +180,16 @@ $locationValue = $report['location_text'] ?? '';
         <textarea id="description" name="description" rows="4" required><?php echo htmlspecialchars($descriptionValue); ?></textarea>
 
         <label for="location_text">Location *</label>
-        <input type="text" id="location_text" name="location_text" required
-               value="<?php echo htmlspecialchars($locationValue); ?>"
-               placeholder="Street, landmark, or area name" />
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="text" id="location_text" name="location_text" required
+                 value="<?php echo htmlspecialchars($locationValue); ?>"
+                 placeholder="Street, landmark, or area name"
+                 style="flex:1; min-width:200px;" />
+          <button type="button" id="geo-btn" class="btn secondary" style="white-space:nowrap;">
+            Use my location
+          </button>
+        </div>
+        <p class="muted" id="geo-status" style="margin-top:4px;"></p>
 
         <label for="photo">Photo (optional)</label>
         <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp" />
@@ -194,5 +201,43 @@ $locationValue = $report['location_text'] ?? '';
   </div>
 
   <script src="../assets/app.js"></script>
+  <script>
+    (function () {
+      var btn    = document.getElementById('geo-btn');
+      var input  = document.getElementById('location_text');
+      var status = document.getElementById('geo-status');
+
+      if (!btn) return;
+
+      if (!navigator.geolocation) {
+        btn.disabled = true;
+        btn.title = 'Geolocation not supported by this browser';
+        return;
+      }
+
+      btn.addEventListener('click', function () {
+        btn.disabled = true;
+        status.textContent = 'Detecting location…';
+
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            var lat = pos.coords.latitude.toFixed(6);
+            var lng = pos.coords.longitude.toFixed(6);
+            input.value = lat + ', ' + lng;
+            status.textContent = 'Location detected. You can edit it if needed.';
+            btn.disabled = false;
+          },
+          function (err) {
+            var msg = 'Location access denied.';
+            if (err.code === err.POSITION_UNAVAILABLE) msg = 'Location unavailable.';
+            if (err.code === err.TIMEOUT) msg = 'Location request timed out.';
+            status.textContent = msg + ' Please type your location manually.';
+            btn.disabled = false;
+          },
+          { timeout: 10000 }
+        );
+      });
+    })();
+  </script>
 </body>
 </html>

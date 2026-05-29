@@ -191,7 +191,7 @@ $reports = $pdo->query("
         <thead>
           <tr>
             <th>ID</th><th>Citizen</th><th>Category</th><th>Description</th><th>Location</th>
-            <th>Status</th><th>Assigned To</th><th>Assign Collector</th>
+            <th>Photo</th><th>Status</th><th>Assigned To</th><th>Assign Collector</th>
           </tr>
         </thead>
         <tbody>
@@ -202,6 +202,13 @@ $reports = $pdo->query("
             <td><?php echo htmlspecialchars($r['category_name']); ?></td>
             <td><?php echo htmlspecialchars($r['description']); ?></td>
             <td><?php echo htmlspecialchars($r['location_text']); ?></td>
+            <td>
+              <?php if (!empty($r['photo_path'])): ?>
+                <a class="btn secondary small" href="photo.php?report_id=<?php echo (int)$r['id']; ?>" target="_blank" rel="noopener">View</a>
+              <?php else: ?>
+                <span class="muted">—</span>
+              <?php endif; ?>
+            </td>
             <td>
               <span class="badge <?php echo htmlspecialchars($r['status']); ?>">
                 <?php echo htmlspecialchars(str_replace('_', ' ', $r['status'])); ?>
