@@ -1,0 +1,9 @@
+# PyInstaller build artefacts
+build/
+dist/
+*.spec
+
+# Uploaded waste photos
+uploads/*
+!uploads/.gitignore
+!uploads/.htaccess
