@@ -7,3 +7,10 @@ dist/
 uploads/*
 !uploads/.gitignore
 !uploads/.htaccess
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Built installer (rebuild with build_setup_exe.bat)
+WasteSystemSetup.exe
